@@ -1,0 +1,5 @@
+arquivos:
+linha   1 - numero de itens
+linha   2 - capacidade de todos os cestos
+linha ... - peso de um item
+
