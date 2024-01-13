@@ -14,8 +14,13 @@ function read_file(file_name)
     return num_items, basket_capacity, item_weight
 end
 
+if length(ARGS) != 1
+    println("usage: julia bpp_fomulation.jl <./file/path/file_name>")
+    exit(1)
+end
+
 # Caminho relativo ao current work dir
-num_items, basket_capacity, item_weight = read_file("./selected_bpp_instances/teste.txt")
+num_items, basket_capacity, item_weight = read_file(ARGS[1])
 
 println("Quantidade de números: ", num_items)
 println("Capacidade das cestas: ", basket_capacity)
@@ -39,23 +44,19 @@ end
 for j in 1:num_items
     @constraint(m,
                 sum(item_weight[i] * x[i, j] for i in 1:num_items)
-                <= basket_capacity)
+                <= basket_capacity * y[j])
 end
 
-# Lista com cestas contendo pelo menos 1 item (se soma coluna >= 1 y = 1)
-for j in 1:num_items
-    @constraint(m,
-                y[j] 
-                == sum(x[i, j] for i in 1:num_items))
-end
-
-#@objective(m, Min, sum(y[j] for j in 1:num_items))
+@objective(m, Min, sum(y))
 optimize!(m)
 
-@show JuMP.value.(x)
-@show JuMP.value.(y)
-allocation = value.(x)
+# mostra a matriz de item x cesta
+#@show JuMP.value.(x)
+# mostra as cestas com algum valor
+#@show JuMP.value.(y)
 
+println("Número mínimo de cestos necessários:", objective_value(m)) 
+allocation = value.(x)
 println("Id do item e peso em cada cesto:")
 for j in 1:num_items
     items_in_basket = findall(i -> allocation[i, j] > 0, 1:num_items)
@@ -64,7 +65,4 @@ for j in 1:num_items
     if (!isempty(items_in_basket)) 
         println("Cesto $j: Itens $items_in_basket, Peso total: $total_weight")
     end
-
 end
-
-
