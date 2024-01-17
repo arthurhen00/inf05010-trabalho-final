@@ -5,7 +5,7 @@ from random import randint, seed
 import time
 
 
-file_name = 'teste2'
+file_name = 'Hard28_BPP645'
 file_path = f'selected_bpp_instances/{file_name}.txt'
 
 
@@ -57,7 +57,9 @@ class Solution():
         for bin in self.assignment:
             print(bin_capacity-sum([weights[x] for x in bin]))
         return None
-def read_file(file_path: str):
+    
+    
+def read_file(file_path: str) -> None:
     weights = []
     with open(file_path,'r') as f:
         number_of_items = int(f.readline())
@@ -68,7 +70,7 @@ def read_file(file_path: str):
     return number_of_items, bin_capacity, weights
 
 
-def find_initial_solution(problem_instance) -> Solution:
+def find_initial_solution(problem_instance: (int,int,List[int])) -> Solution:
     number_of_items, bin_capacity, weights = problem_instance
     assignment = [[]]
     for i in range(number_of_items):
@@ -84,7 +86,7 @@ def find_initial_solution(problem_instance) -> Solution:
 def rand_greedy(solutions: List[Solution],alpha: int) -> Solution:
     sorted(solutions)
     chosen_index = randint(0,ceil(len(solutions)/(100/alpha)-1))
-    if solutions[0].get_bin_amount() < solutions[chosen_index].get_bin_amount():
+    if solutions[0] < solutions[chosen_index]:
         return solutions[0]
     return solutions[chosen_index]
 
@@ -107,22 +109,19 @@ def local_search(solution: Solution) -> List[Solution]:
     
     return neighbors
 
-def grasp(alpha: int,prob_instance, max_iter:int = 100) -> Solution:
+def grasp(alpha: int, prob_instance: (int,int,List[int]), max_iter:int = 100) -> Solution:
     if alpha > 100 or alpha <= 0:
         raise Exception('alpha inválido! (0 <= alpha < 100)') from ValueError
     
     i = 0
-    explored = set()
     best_s = find_initial_solution(prob_instance)
     while i < max_iter:
-        #print(best_s)
         s = local_search(best_s)
         if not s:
             break
         s = rand_greedy(s, alpha)
         
-        if s <= best_s and s not in explored:
-            #explored.add(best_s)
+        if s <= best_s:
             best_s = s
         
         i = i+1
@@ -134,9 +133,13 @@ instance = read_file(file_path)
 num_items, bin_capacity, weights = instance
 print(f'Número de itens: {num_items}')
 print(f'Capacidade dos cestos: {bin_capacity}')
-print(f'peso dos itens: {weights}')
+print(f'Peso dos itens: {weights}\n')
 
 start_time = time.time()
-s = grasp(10,instance)
+s = grasp(10,instance, 300)
+
+print("--- Resolvido em %s segundos ---" % (time.time() - start_time))
 print(f'Solução: {s}')
-print("--- %s seconds ---" % (time.time() - start_time))
+print(f'Quantidade de cestos: {s.get_bin_amount()}')
+for index,bin in enumerate(s.assignment):
+    print(f'Cesto {index}: {', '.join(map(str, bin))}  - Peso total: {sum([weights[x] for x in bin])}')
