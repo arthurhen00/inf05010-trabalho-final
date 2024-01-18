@@ -7,73 +7,101 @@ function read_file(file_name)
     # fst line - number of itens
     num_items = parse(Int, data[1])
     # snd line - capacity of all baskets
-    basket_capacity = parse(Int, data[2])
+    bin_capacity = parse(Int, data[2])
     # rest of the lines - weight of each item
-    item_weight = [parse(Int, line) for line in data[3:end]]
+    weights = [parse(Int, line) for line in data[3:end]]
 
-    return num_items, basket_capacity, item_weight
+    return num_items, bin_capacity, weights
 end
 
 if length(ARGS) != 1
-    println("usage: julia bpp_fomulation.jl <./file/path/file_name>")
-    exit(1)
+    #println("usage: julia bpp_fomulation.jl <./file/path/file_name>")
+    #exit(1)
+    file_path = "selected_bpp_instances/N1W1B1R0.txt"
+else
+    file_path = ARGS[1]
 end
 
 # Caminho relativo ao current work dir
-num_items, basket_capacity, item_weight = read_file(ARGS[1])
+num_items, bin_capacity, weights = read_file(file_path)
 
-num_bins = num_items
+assignment = [[]]
 
+for i in 1:num_items
+    item_weight = weights[i]
+    placed = false
+
+    if size(assignment[1],1) == 0
+        push!(assignment[1], i)
+        continue
+    end
+
+    for bin in assignment
+        if sum(weights[x] for x in bin) + item_weight <= bin_capacity 
+            push!(bin, i)
+            placed = true
+            break
+        end
+    end
+
+    if !placed
+        push!(assignment, [i])
+    end
+end
+
+max_bins = size(assignment,1)
+
+println("---------------------------------------------------------------")
 println("Quantidade de números: ", num_items)
-println("Capacidade das cestas: ", basket_capacity)
-println("Pesos: ", item_weight)
+println("Capacidade das cestas: ", bin_capacity)
+println("Pesos: ", weights)
 
 m = Model(GLPK.Optimizer;  add_bridges = false)
-set_attribute(m, "tm_lim", 3600 * 1_000)
+set_attribute(m, "tm_lim", 3600 * 100)
 
 # var decisao: x[i, j] indica se o item i está na cesta j
-@variable(m, x[1:num_items, 1:num_bins], Bin)
+@variable(m, x[1:num_items, 1:max_bins], Bin)
 # indica se pelo menos um item foi atribuído na cesta j
 @variable(m, y[1:num_items], Bin)
 
 # 
 @constraint(m,
-            [i = 1:num_items, j = 1:num_bins],
+            [i = 1:num_items, j = 1:max_bins],
             x[i,j] 
             <= y[j])
 
 # Todos itens devem ser usados uma vez (soma das linhas)
 @constraint(m, 
             [i = 1:num_items], 
-            sum(x[i, j] for j in 1:num_bins)
+            sum(x[i, j] for j in 1:max_bins)
             == 1)
 
 # Limite de peso por cesta (soma das colunas)
 @constraint(m, 
-            [j = 1:num_bins],
-            sum(item_weight[i] * x[i, j] for i in 1:num_items) 
-            <= basket_capacity * y[j])
+            [j = 1:max_bins],
+            sum(weights[i] * x[i, j] for i in 1:num_items) 
+            <= bin_capacity * y[j])
 
 # Ocupar cestas de forma sequencial
 @constraint(m,
-            [j = 1:num_bins-1],
-            y[j+1] 
+            [j = 2:max_bins],
+            y[j-1] 
             >= y[j])
 
 @objective(m, Min, sum(y))
 optimize!(m)
 
-# @show objective_value(m)
-# @show JuMP.solve_time(m)
+
+println()
 println("Número mínimo de cestos necessários: ", objective_value(m)) 
 println("Tempo (s): ", JuMP.solve_time(m)) 
 
 allocation = value.(x)
 
 println("Id do item e peso em cada cesto:")
-for j in 1:num_bins
+for j in 1:max_bins
     items_in_basket = findall(i -> allocation[i, j] > 0, 1:num_items)
-    total_weight = isempty(items_in_basket) ? 0 : sum(item_weight[i] for i in items_in_basket)
+    total_weight = isempty(items_in_basket) ? 0 : sum(weights[i] for i in items_in_basket)
     
     if (!isempty(items_in_basket)) 
         println("Cesto $j: Itens $items_in_basket, Peso total: $total_weight")
