@@ -29,6 +29,7 @@ println("Capacidade das cestas: ", basket_capacity)
 println("Pesos: ", item_weight)
 
 m = Model(GLPK.Optimizer;  add_bridges = false)
+set_attribute(m, "tm_lim", 3600 * 1_000)
 
 # var decisao: x[i, j] indica se o item i está na cesta j
 @variable(m, x[1:num_items, 1:num_bins], Bin)
@@ -60,7 +61,6 @@ m = Model(GLPK.Optimizer;  add_bridges = false)
             >= y[j])
 
 @objective(m, Min, sum(y))
-set_attribute(m, "tm_lim", 60 * 1_000)
 optimize!(m)
 
 # @show objective_value(m)
