@@ -1,8 +1,6 @@
 using JuMP
 using GLPK
 
-
-
 function read_file(file_name)
     # all numbers in file
     data = readlines(file_name)
@@ -16,10 +14,13 @@ function read_file(file_name)
     return num_items, basket_capacity, item_weight
 end
 
-
+if length(ARGS) != 1
+    println("usage: julia bpp_fomulation.jl <./file/path/file_name>")
+    exit(1)
+end
 
 # Caminho relativo ao current work dir
-num_items, basket_capacity, item_weight = read_file("./1002_80000_NR_27.txt")
+num_items, basket_capacity, item_weight = read_file(ARGS[1])
 
 num_bins = num_items
 
@@ -34,27 +35,40 @@ m = Model(GLPK.Optimizer;  add_bridges = false)
 # indica se pelo menos um item foi atribuído na cesta j
 @variable(m, y[1:num_items], Bin)
 
-
-
-@constraint(m,[i = 1:num_items, j = 1:num_bins] , x[i,j] <= y[j])
-
+# 
+@constraint(m,
+            [i = 1:num_items, j = 1:num_bins],
+            x[i,j] 
+            <= y[j])
 
 # Todos itens devem ser usados uma vez (soma das linhas)
-@constraint(m, [i = 1:num_items], sum(x[i, j] for j in 1:num_bins)== 1)
+@constraint(m, 
+            [i = 1:num_items], 
+            sum(x[i, j] for j in 1:num_bins)
+            == 1)
 
 # Limite de peso por cesta (soma das colunas)
-@constraint(m, [j = 1:num_bins] ,sum(item_weight[i] * x[i, j] for i in 1:num_items) <= basket_capacity * y[j])
+@constraint(m, 
+            [j = 1:num_bins],
+            sum(item_weight[i] * x[i, j] for i in 1:num_items) 
+            <= basket_capacity * y[j])
 
+# Ocupar cestas de forma sequencial
+@constraint(m,
+            [j = 1:num_bins-1],
+            y[j+1] 
+            >= y[j])
 
 @objective(m, Min, sum(y))
+set_attribute(m, "tm_lim", 60 * 1_000)
 optimize!(m)
 
-@show objective_value(m)
-@show JuMP.solve_time(m)
+# @show objective_value(m)
+# @show JuMP.solve_time(m)
+println("Número mínimo de cestos necessários: ", objective_value(m)) 
+println("Tempo (s): ", JuMP.solve_time(m)) 
 
 allocation = value.(x)
-
-
 
 println("Id do item e peso em cada cesto:")
 for j in 1:num_bins
@@ -64,7 +78,4 @@ for j in 1:num_bins
     if (!isempty(items_in_basket)) 
         println("Cesto $j: Itens $items_in_basket, Peso total: $total_weight")
     end
-
 end
-
-
