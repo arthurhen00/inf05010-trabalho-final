@@ -2,11 +2,26 @@ from copy import deepcopy
 from typing import List
 from math import ceil
 from random import randint, seed
+import sys
 import time
 
+if len(sys.argv) > 1:
+    file_path = sys.argv[1]
+else:
+    file_name = 'teste2'
+    file_path = f'selected_bpp_instances/{file_name}.txt'
+    
+    
+if len(sys.argv) > 2:
+    alpha = int(sys.argv[2])
+else:
+    alpha = 10
+    
 
-file_name = 'teste2'
-file_path = f'selected_bpp_instances/{file_name}.txt'
+if len(sys.argv) > 3:
+    max_iter = int(sys.argv[3])
+else:
+    max_iter = 300
 
 
 class Solution():
@@ -116,16 +131,19 @@ def rand_greedy(instance: (int,int,List[int]),alpha: int) -> Solution:
         i = i + 1
     return s
 
-def local_search(solution: Solution) -> Solution:
+def local_search(solution: Solution, explored: set) -> Solution:
     
     improved = True
-    explored = set()
-    while improved:
+    for _ in range(100):
+        if not improved:
+            break
+        explored.add(solution)
         improved = False
         neighbors = solution.get_neighbors()
+        sorted(neighbors)
         for neighbor in neighbors:
             if neighbor <= solution and neighbor not in explored:
-                explored.add(solution)
+                
                 solution = neighbor
                 improved = True
                 break
@@ -139,28 +157,37 @@ def grasp(alpha: int, prob_instance: (int,int,List[int]), max_iter:int = 100) ->
     
     i = 0
     solutions = []
+    explored = set()
     while i < max_iter:
+        print(i)
+        i = i+1
         s = rand_greedy(prob_instance, alpha)
-        s = local_search(s)
         
+        if s in explored:
+            continue
+        s = local_search(s,explored)
         solutions.append(s)
         
-        i = i+1
+        
         
        
     return min(solutions), i
 
 instance = read_file(file_path)
 num_items, bin_capacity, weights = instance
+
 print(f'Número de itens: {num_items}')
 print(f'Capacidade dos cestos: {bin_capacity}')
 print(f'Peso dos itens: {weights}\n')
 
 start_time = time.time()
-s, iterations = grasp(10,instance, 300)
+s, iterations = grasp(alpha,instance, max_iter)
 
-print(f"--- Resolvido em {time.time() - start_time: .5f} segundos | {iterations} iterações realizadas ---")
+print(f"--- Resolvido em {time.time() - start_time: .5f} segundos | {iterations} iterações realizadas | Alpha = {alpha} ---")
 print(f'Solução: {s}')
 print(f'Quantidade de cestos: {s.get_bin_amount()}')
+
+bin_with_most_items = max(s.assignment, key=lambda x: len(x))
+max_print_len  = len(', '.join(map(str, bin_with_most_items)))
 for index,bin in enumerate(s.assignment):
-    print(f'Cesto {index}: {', '.join(map(str, bin))}  - Peso total: {sum([weights[x] for x in bin])}')
+    print(f'Cesto {index+1}: {", ".join(map(str, bin)):<{max_print_len}} | Peso total: {sum([weights[x] for x in bin])}')
