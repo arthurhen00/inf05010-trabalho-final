@@ -15,9 +15,8 @@ function read_file(file_name)
 end
 
 if length(ARGS) != 1
-    #println("usage: julia bpp_fomulation.jl <./file/path/file_name>")
-    #exit(1)
-    file_path = "selected_bpp_instances/N1W1B1R0.txt"
+    println("usage: julia bpp_fomulation.jl <./file/path/file_name>")
+    exit(1)
 else
     file_path = ARGS[1]
 end
@@ -25,8 +24,9 @@ end
 # Caminho relativo ao current work dir
 num_items, bin_capacity, weights = read_file(file_path)
 
+# Estimativa de bins
+# Pega os itens e coloca em uma bin que ainda tem espaco (primeiro que couber)
 assignment = [[]]
-
 for i in 1:num_items
     item_weight = weights[i]
     placed = false
@@ -48,7 +48,6 @@ for i in 1:num_items
         push!(assignment, [i])
     end
 end
-
 max_bins = size(assignment,1)
 
 println("---------------------------------------------------------------")
@@ -90,7 +89,6 @@ set_attribute(m, "tm_lim", 3600 * 100)
 
 @objective(m, Min, sum(y))
 optimize!(m)
-
 
 println()
 println("Número mínimo de cestos necessários: ", objective_value(m)) 
