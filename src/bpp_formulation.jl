@@ -14,11 +14,15 @@ function read_file(file_name)
     return num_items, bin_capacity, weights
 end
 
-if length(ARGS) != 1
-    println("usage: julia bpp_fomulation.jl <./file/path/file_name>")
-    exit(1)
-else
+if length(ARGS) == 1
     file_path = ARGS[1]
+    timeout = 1
+elseif length(ARGS) == 2
+    file_path = ARGS[1]
+    timeout   = parse(Float64, ARGS[2])
+else
+    println("usage: julia bpp_fomulation.jl <./file/path/file_name> <timeout (hours)>")
+    exit(1)
 end
 
 # Caminho relativo ao current work dir
@@ -56,7 +60,7 @@ println("Capacidade das cestas: ", bin_capacity)
 println("Pesos: ", weights)
 
 m = Model(GLPK.Optimizer;  add_bridges = false)
-set_attribute(m, "tm_lim", 3600 * 100)
+set_attribute(m, "tm_lim", 3600 * timeout * 1_000)
 
 # var decisao: x[i, j] indica se o item i está na cesta j
 @variable(m, x[1:num_items, 1:max_bins], Bin)
