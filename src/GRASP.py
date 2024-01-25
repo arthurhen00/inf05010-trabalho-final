@@ -4,6 +4,7 @@ from math import ceil
 from random import randint, seed
 import sys
 import time
+from datetime import datetime
 
 if len(sys.argv) > 1:
     file_path = sys.argv[1]
@@ -16,12 +17,6 @@ if len(sys.argv) > 2:
     alpha = int(sys.argv[2])
 else:
     alpha = 10
-    
-
-if len(sys.argv) > 3:
-    max_iter = int(sys.argv[3])
-else:
-    max_iter = 300
 
 
 class Solution():
@@ -70,7 +65,9 @@ class Solution():
     
     def get_neighbors(self) -> List['Solution']:
         _, bin_capacity , weights = self.problem_instance
-        neighbors = []
+        best_neighbor = self
+    
+       
         for bin_index, bin in enumerate(self.assignment):
             for other_bin_index, other_bin in enumerate(self.assignment):
                 if bin == other_bin:
@@ -83,9 +80,10 @@ class Solution():
                         new_solution.assignment[bin_index].remove(item)
                         if new_solution.assignment[bin_index] == []:
                             new_solution.assignment.remove([])
-                        neighbors.append(new_solution)
+                        if new_solution <= best_neighbor:
+                            return new_solution
         
-        return neighbors
+        return best_neighbor
     
 
     
@@ -139,14 +137,10 @@ def local_search(solution: Solution, explored: set) -> Solution:
             break
         explored.add(solution)
         improved = False
-        neighbors = solution.get_neighbors()
-        sorted(neighbors)
-        for neighbor in neighbors:
-            if neighbor <= solution and neighbor not in explored:
-                
-                solution = neighbor
-                improved = True
-                break
+        neighbor = solution.get_neighbors()
+        if neighbor not in explored:
+            solution = neighbor
+            improved = True
             
     return solution
         
@@ -155,23 +149,36 @@ def grasp(alpha: int, prob_instance: (int,int,List[int]), max_iter:int = 100) ->
     if alpha > 100 or alpha <= 0:
         raise Exception('alpha inválido! (0 <= alpha < 100)') from ValueError
     
+    _ , bin_capacity, weights = prob_instance
+    
+    best_linear_solution =  ceil(sum(weights)/bin_capacity)
+    
     i = 0
-    solutions = []
+    current_best_solution = rand_greedy(prob_instance, alpha)
+    print("Melhor solução possivel (caso os itens fossem líquidos): ", best_linear_solution)
     explored = set()
+    
+    
+    start = datetime.now()
     while i < max_iter:
-        print(i)
-        i = i+1
+        
+        i = i+1 
         s = rand_greedy(prob_instance, alpha)
         
         if s in explored:
+            
             continue
         s = local_search(s,explored)
-        solutions.append(s)
+        
+        #print(f'Iteração {i} do GRASP - {len(explored)} soluções exploradas em {(datetime.now() - start).total_seconds()} segundos' )
+        
+        if s < current_best_solution:
+            current_best_solution = s
+            if s.get_bin_amount() == best_linear_solution:
+                break
         
         
-        
-       
-    return min(solutions), i
+    return current_best_solution, i
 
 instance = read_file(file_path)
 num_items, bin_capacity, weights = instance
@@ -180,14 +187,18 @@ print(f'Número de itens: {num_items}')
 print(f'Capacidade dos cestos: {bin_capacity}')
 print(f'Peso dos itens: {weights}\n')
 
+max_iter = ceil(20000000/(num_items**1.35))
+
 start_time = time.time()
 s, iterations = grasp(alpha,instance, max_iter)
 
-print(f"--- Resolvido em {time.time() - start_time: .5f} segundos | {iterations} iterações realizadas | Alpha = {alpha} ---")
+
+
+print(f"--- Tempo de execução {time.time() - start_time: .5f} segundos | {iterations} iterações realizadas | Alpha = {alpha} ---")
 print(f'Solução: {s}')
 print(f'Quantidade de cestos: {s.get_bin_amount()}')
 
 bin_with_most_items = max(s.assignment, key=lambda x: len(x))
 max_print_len  = len(', '.join(map(str, bin_with_most_items)))
 for index,bin in enumerate(s.assignment):
-    print(f'Cesto {index+1}: {", ".join(map(str, bin)):<{max_print_len}} | Peso total: {sum([weights[x] for x in bin])}')
+    print(f'Cesto {index+1:<{len(str(len(s.assignment)))}}: {", ".join(map(str, bin)):<{max_print_len}} | Peso total: {sum([weights[x] for x in bin])}')
