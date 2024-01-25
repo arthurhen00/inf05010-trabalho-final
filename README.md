@@ -15,7 +15,25 @@ import Pkg; Pkg.add("JuMP"); Pkg.add("GLPK")
 ```
 
 ### Python  
-biblitoecas usadas e instalacao AQUI
+Certifique-se de ter a linguagem de programação Python instalada em seu sistema.  
+1. Caso a linguagem Python não esteja instalada: https://www.python.org/downloads/
+
+
+## Como utilizar
+O algoritmo leva como entrada 4 parâmetros, sendo eles:
+- O caminho para o arquivo da instância;
+- O fator de aleatoriedade (alpha) usado no GRASP, na fase de construção da soluçao, seleciona uma ds alpha melhores soluções de acordo com o critério guloso, aceita valores entre 1 e 100;
+- O número máximo de iterações do GRASP (opcional: padräo );
+- A quantidade de iterações da busca local
+- A seed de aleatoriedade
+
+Para executar o algoritmo execute o seguinte comando:
+python (caminho para o script) (caminho para o arquivo da instância) [-a=alpha] [-i=max iterações do GRASP] [-s=seed] [-d=max iterações da busca local]
+
+O comando: 
+      python (caminho para o script) -h 
+indica quais argumentos o script recebe.
+
 
 ## Relatório: 
 O entregável relatório/experimentos consiste em:  
