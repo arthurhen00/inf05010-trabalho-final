@@ -14,19 +14,23 @@ function read_file(file_name)
     return num_items, bin_capacity, weights
 end
 
-if length(ARGS) != 1
-    #println("usage: julia bpp_fomulation.jl <./file/path/file_name>")
-    #exit(1)
-    file_path = "selected_bpp_instances/N1W1B1R0.txt"
-else
+if length(ARGS) == 1
     file_path = ARGS[1]
+    timeout = 1
+elseif length(ARGS) == 2
+    file_path = ARGS[1]
+    timeout   = parse(Float64, ARGS[2])
+else
+    println("usage: julia bpp_fomulation.jl <./file/path/file_name> <timeout (hours)>")
+    exit(1)
 end
 
 # Caminho relativo ao current work dir
 num_items, bin_capacity, weights = read_file(file_path)
 
+# Estimativa de bins
+# Pega os itens e coloca em uma bin que ainda tem espaco (primeiro que couber)
 assignment = [[]]
-
 for i in 1:num_items
     item_weight = weights[i]
     placed = false
@@ -48,7 +52,6 @@ for i in 1:num_items
         push!(assignment, [i])
     end
 end
-
 max_bins = size(assignment,1)
 
 println("---------------------------------------------------------------")
@@ -57,7 +60,7 @@ println("Capacidade das cestas: ", bin_capacity)
 println("Pesos: ", weights)
 
 m = Model(GLPK.Optimizer;  add_bridges = false)
-set_attribute(m, "tm_lim", 3600 * 100)
+set_attribute(m, "tm_lim", 3600 * timeout * 1_000)
 
 # var decisao: x[i, j] indica se o item i está na cesta j
 @variable(m, x[1:num_items, 1:max_bins], Bin)
@@ -90,7 +93,6 @@ set_attribute(m, "tm_lim", 3600 * 100)
 
 @objective(m, Min, sum(y))
 optimize!(m)
-
 
 println()
 println("Número mínimo de cestos necessários: ", objective_value(m)) 
