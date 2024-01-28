@@ -13,6 +13,15 @@ seguinte linha no terminal Julia:
 ```
 import Pkg; Pkg.add("JuMP"); Pkg.add("GLPK")
 ```
+## Como utilizar  
+O algoritmo leva como entrada 2 parâmetros, sendo eles:  
+- O caminho para o arquivo da instância;  
+- O timeout (padrao de 1 hora).
+ex:
+```
+julia ./src/bpp_formulation.jl ./selected_bpp_instances/N1W1B1R0.txt 0.02
+```
+
 
 ### Python  
 Certifique-se de ter a linguagem de programação Python instalada em seu sistema.  
