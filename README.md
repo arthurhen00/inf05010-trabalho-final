@@ -35,24 +35,27 @@ O comando:
 indica quais argumentos o script recebe.
 
 
-## Relatório: 
+## Relatório:  
+https://docs.google.com/document/d/12v9l1n3OciCzPK5jhdePC-mQr0RAK0PfQZrxRTS1UK4/edit?usp=sharing  
 O entregável relatório/experimentos consiste em:  
-- [ ] Descrição clara e completa da formulação inteira empregada.  
-- [ ] Descrição clara e completa da meta-heurística desenvolvida:  
-  - [ ] Escolha de representação do problema.  
-  - [ ] Construção da solução inicial.  
-  - [ ] Principais estruturas de dados  
-  - [ ] Vizinhança e a estratégia de escolha de vizinhos (quando aplicável).  
-  - [ ] Processo de recombinação e factibilização (quando aplicável).  
-  - [ ] Parâmetros do método (valores usados nos experimentos).  
-  - [ ] Critério de parada (NAO pode ser tempo).  
+- [x] Descrição clara e completa da formulação inteira empregada.  
+- [x] Descrição clara e completa da meta-heurística desenvolvida:  
+  - [x] Escolha de representação do problema.  
+  - [x] Construção da solução inicial.  
+  - [x] Principais estruturas de dados  
+  - [x] Vizinhança e a estratégia de escolha de vizinhos (quando aplicável).  
+  - [x] Processo de recombinação e factibilização (quando aplicável).  
+  - [x] Parâmetros do método (valores usados nos experimentos).  
+  - [x] Critério de parada (NAO pode ser tempo).  
 - [ ] Tabela dos resultados de 10 execuções da meta-heurística sobre cada uma das instâncias (i.e., cada linha representa um par de uma instância e de uma semente de aleatoriedade, a qual é diferente para cada execução, OU uma tabela com cabeçalho + 10 linhas para cada instância) com as seguintes colunas:  
   - [ ] Valor da solução inicial da meta-heurística: Si.  
   - [ ] Valor da melhor solução encontrada pela meta-heurítica: Sh.  
   - [ ] Tempo de execução da meta-heurística (segundos): H T (s).  
-  - [ ] Valor da solução encontrada pela formulação: Sf.  
-  - [ ] Caso termine por limite de tempo, o limite superior: Uf.  
-  - [ ] Tempo de execução da formulação (segundos): F T (s).  
+  - [x] Valor da solução encontrada pela formulação: Sf.  
+  - [x] Caso termine por limite de tempo, o limite superior: Uf.  
+  - [x] Tempo de execução da formulação (segundos): F T (s).  
      
+## Apresentação:  
+https://docs.google.com/presentation/d/1mJHNlr6eC86nwn9THPruwF6e-OqqGj3GZmNK6_8WeLA/edit?usp=sharing  
 
-https://docs.google.com/document/d/12v9l1n3OciCzPK5jhdePC-mQr0RAK0PfQZrxRTS1UK4/edit?usp=sharing
+
