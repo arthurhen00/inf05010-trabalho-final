@@ -55,6 +55,7 @@ end
 max_bins = size(assignment,1)
 
 println("---------------------------------------------------------------")
+println("Estimativa: ", max_bins)
 println("Quantidade de números: ", num_items)
 println("Capacidade das cestas: ", bin_capacity)
 println("Pesos: ", weights)
