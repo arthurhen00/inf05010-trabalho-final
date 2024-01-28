@@ -2,19 +2,11 @@ import sys, argparse, time
 from copy import deepcopy
 from typing import List
 from math import ceil
-from random import randint, seed
+from random import randint, seed, random
 from datetime import datetime
 
-def read_file(file_path: str) -> (int,int,List[int]):
-    weights = []
-    with open(file_path,'r') as f:
-        number_of_items = int(f.readline())
-        bin_capacity = int(f.readline())
-        for _ in range(number_of_items):
-            weights.append(int(f.readline()))
-            
-    return number_of_items, bin_capacity, weights
-    
+
+
 class Solution():
     def __init__(self, problem_instance: (int,int,List[int]), assignment:List[List[int]]):
         self.assignment = assignment
@@ -92,6 +84,15 @@ class Solution():
                 
         return bins_with_enough_space
     
+def read_file(file_path: str) -> (int,int,List[int]):
+    weights = []
+    with open(file_path,'r') as f:
+        number_of_items = int(f.readline())
+        bin_capacity = int(f.readline())
+        for i in range(number_of_items):
+            weights.append(int(f.readline()))
+            
+    return number_of_items, bin_capacity, weights
 
 def rand_greedy(instance: (int,int,List[int]),alpha: int) -> Solution:
     _, bin_capacity, weights = instance
@@ -116,10 +117,10 @@ def rand_greedy(instance: (int,int,List[int]),alpha: int) -> Solution:
         i = i + 1
     return s
 
-def local_search(solution: Solution, explored: set, search_depth: int) -> Solution:
+def local_search(solution: Solution, explored: set, max_iter: int) -> Solution:
     
     improved = True
-    for _ in range(search_depth):
+    for _ in range(max_iter):
         if not improved:
             break
         explored.add(solution)
@@ -132,7 +133,7 @@ def local_search(solution: Solution, explored: set, search_depth: int) -> Soluti
     return solution
         
    
-def grasp(alpha: int, prob_instance: (int,int,List[int]), max_iter:int, local_search_depth:int ) -> Solution:
+def grasp(alpha: int, prob_instance: (int,int,List[int]), max_iter:int ,local_search_depth: int) -> Solution:
     if alpha > 100 or alpha <= 0:
         raise Exception('alpha inválido! (0 <= alpha < 100)') from ValueError
     
@@ -142,34 +143,29 @@ def grasp(alpha: int, prob_instance: (int,int,List[int]), max_iter:int, local_se
     
     i = 0
     current_best_solution = rand_greedy(prob_instance, alpha)
-    print("Melhor solução possivel (caso os itens fossem líquidos): ", best_linear_solution)
     explored = set()
+    initial_solution = current_best_solution
     
-    iterations_without_new_solution = 0 
     start = datetime.now()
     while i < max_iter:
         
         i = i+1 
-        s = rand_greedy(prob_instance, alpha)
+        random_solution = rand_greedy(prob_instance, alpha)
         
-        if s in explored:
-            iterations_without_new_solution += 1
-            if iterations_without_new_solution == 1000:
-                break
+        if random_solution in explored:
             continue
-    
-        iterations_without_new_solution = 0
-        s = local_search(s,explored,local_search_depth)
         
-        #print(f'Iteração {i} do GRASP - {len(explored)} soluções exploradas em {(datetime.now() - start).total_seconds()} segundos' )
-        
+        s = local_search(random_solution,explored,local_search_depth)
         if s < current_best_solution:
+            initial_solution = random_solution
             current_best_solution = s
             if s.get_bin_amount() == best_linear_solution:
                 break
         
-        
-    return current_best_solution, i
+
+    return initial_solution, current_best_solution, i
+
+
 
 
 
@@ -196,32 +192,23 @@ if len(sys.argv) > 1:
         seed(args['seed'])
     
 else:
-    file_path = 'selected_bpp_instances/teste.txt'
-    alpha = 10
+    file_path = 'selected_bpp_instances/N1W1B1R0.txt'
+    alpha = 20
     max_iter = None
     local_search_depth = 100
 
 instance = read_file(file_path)
 num_items, bin_capacity, weights = instance
 
-    
-
-max_iter = ceil(20000000/(num_items**1.35)) if max_iter is None else max_iter
-
 print(f'Número de itens: {num_items}')
 print(f'Capacidade dos cestos: {bin_capacity}')
 print(f'Peso dos itens: {weights}\n')
+max_iter = ceil(40000000/(num_items**1.35)) if max_iter is None else max_iter
 
 start_time = time.time()
-s, iterations = grasp(alpha,instance, max_iter, local_search_depth)
+initial_solution, final_solution, iterations = grasp(alpha,instance, max_iter,local_search_depth)
 
-
-
-print(f"--- Tempo de execução {time.time() - start_time: .5f} segundos | {iterations} iterações realizadas | Alpha: {alpha}  | Profundidade da busca local: {local_search_depth} ---")
-print(f'Solução: {s}')
-print(f'Quantidade de cestos: {s.get_bin_amount()}')
-
-bin_with_most_items = max(s.assignment, key=lambda x: len(x))
-max_print_len  = len(', '.join(map(str, bin_with_most_items)))
-for index,bin in enumerate(s.assignment):
-    print(f'Cesto {index+1:<{len(str(len(s.assignment)))}}: {", ".join(map(str, bin)):<{max_print_len}} | Peso total: {sum([weights[x] for x in bin])}')
+print('Solução inicial: ', initial_solution.get_bin_amount())
+print('Solução final: ', final_solution.get_bin_amount())
+print(f'Tempo : {time.time() - start_time: .5f} segundos')
+print('Iterações : ', iterations)
