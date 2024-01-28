@@ -16,8 +16,8 @@ import Pkg; Pkg.add("JuMP"); Pkg.add("GLPK")
 ## Como utilizar  
 O algoritmo leva como entrada 2 parâmetros, sendo eles:  
 - O caminho para o arquivo da instância;  
-- O timeout (padrao de 1 hora).
-ex:
+- O timeout (padrao de 1 hora).  
+ex:  
 ```
 julia ./src/bpp_formulation.jl ./selected_bpp_instances/N1W1B1R0.txt 0.02
 ```
@@ -62,8 +62,9 @@ O entregável relatório/experimentos consiste em:
   - [ ] Tempo de execução da meta-heurística (segundos): H T (s).  
   - [x] Valor da solução encontrada pela formulação: Sf.  
   - [x] Caso termine por limite de tempo, o limite superior: Uf.  
-  - [x] Tempo de execução da formulação (segundos): F T (s).  
-     
+  - [x] Tempo de execução da formulação (segundos): F T (s).
+- [ ] Análise dos resultados (resultados variam muito com a semente de aleatoriedade? é melhor que a formulação?).
+- [ ] Conclusões e bibliografia utilizada.  
 ## Apresentação:  
 https://docs.google.com/presentation/d/1mJHNlr6eC86nwn9THPruwF6e-OqqGj3GZmNK6_8WeLA/edit?usp=sharing  
 
