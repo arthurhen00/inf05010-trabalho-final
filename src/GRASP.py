@@ -131,7 +131,6 @@ def local_search(solution: Solution, explored: set, max_iter: int) -> Solution:
             improved = True
             
     return solution
-        
    
 def grasp(alpha: int, prob_instance: (int,int,List[int]), max_iter:int ,local_search_depth: int) -> Solution:
     if alpha > 100 or alpha <= 0:
@@ -146,7 +145,6 @@ def grasp(alpha: int, prob_instance: (int,int,List[int]), max_iter:int ,local_se
     explored = set()
     initial_solution = current_best_solution
     
-    start = datetime.now()
     while i < max_iter:
         
         i = i+1 
@@ -176,7 +174,7 @@ if len(sys.argv) > 1:
     parser=argparse.ArgumentParser()
 
     parser.add_argument('filepath', type=str, help='Caminho para o arquivo da instância')
-    parser.add_argument('-a', '--alpha', type=int, help='Fator de aleatoriedade (alpha) usado no GRASP',default=10)
+    parser.add_argument('-a', '--alpha', type=int, help='Fator de aleatoriedade (alpha) usado no GRASP')
     parser.add_argument('-i', '--max-iterations', type=int, help='Número máximo de iterações do GRASP',default=None)
     parser.add_argument('-s', '--seed', type=int, help='Seed de aletoriedade',default=None)
     parser.add_argument('-d', '--local-search-depth', type=int, help='Quantidade de iterações da busca local',default=100)
@@ -192,7 +190,7 @@ if len(sys.argv) > 1:
         seed(args['seed'])
     
 else:
-    file_path = 'selected_bpp_instances/N1W1B1R0.txt'
+    file_path = 'selected_bpp_instances/teste.txt'
     alpha = 20
     max_iter = None
     local_search_depth = 100
@@ -209,6 +207,10 @@ start_time = time.time()
 initial_solution, final_solution, iterations = grasp(alpha,instance, max_iter,local_search_depth)
 
 print('Solução inicial: ', initial_solution.get_bin_amount())
+print(initial_solution)
+print()
 print('Solução final: ', final_solution.get_bin_amount())
+print(final_solution)
+print()
 print(f'Tempo : {time.time() - start_time: .5f} segundos')
 print('Iterações : ', iterations)
