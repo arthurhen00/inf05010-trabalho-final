@@ -31,10 +31,10 @@ Certifique-se de ter a linguagem de programação Python instalada em seu sistem
 ## Como utilizar
 O algoritmo leva como entrada 4 parâmetros, sendo eles:
 - O caminho para o arquivo da instância;
-- O fator de aleatoriedade (alpha) usado no GRASP, na fase de construção da soluçao, seleciona uma ds alpha melhores soluções de acordo com o critério guloso, aceita valores entre 1 e 100;
-- O número máximo de iterações do GRASP (opcional: padräo );
-- A quantidade de iterações da busca local
-- A seed de aleatoriedade
+- O fator de aleatoriedade (alpha) usado no GRASP, na fase de construção da soluçao, seleciona uma das alpha melhores soluções de acordo com o critério guloso, aceita valores entre 1 e 100;
+- O número máximo de iterações do GRASP (opcional);
+- A quantidade de iterações da busca local (opcional);
+- A seed de aleatoriedade (opcional).
 
 Para executar o algoritmo execute o seguinte comando:
 python (caminho para o script) (caminho para o arquivo da instância) [-a=alpha] [-i=max iterações do GRASP] [-s=seed] [-d=max iterações da busca local]
