@@ -63,15 +63,15 @@ O entregável relatório/experimentos consiste em:
   - [x] Processo de recombinação e factibilização (quando aplicável).  
   - [x] Parâmetros do método (valores usados nos experimentos).  
   - [x] Critério de parada (NAO pode ser tempo).  
-- [ ] Tabela dos resultados de 10 execuções da meta-heurística sobre cada uma das instâncias (i.e., cada linha representa um par de uma instância e de uma semente de aleatoriedade, a qual é diferente para cada execução, OU uma tabela com cabeçalho + 10 linhas para cada instância) com as seguintes colunas:  
-  - [ ] Valor da solução inicial da meta-heurística: Si.  
-  - [ ] Valor da melhor solução encontrada pela meta-heurítica: Sh.  
-  - [ ] Tempo de execução da meta-heurística (segundos): H T (s).  
+- [x] Tabela dos resultados de 10 execuções da meta-heurística sobre cada uma das instâncias (i.e., cada linha representa um par de uma instância e de uma semente de aleatoriedade, a qual é diferente para cada execução, OU uma tabela com cabeçalho + 10 linhas para cada instância) com as seguintes colunas:  
+  - [x] Valor da solução inicial da meta-heurística: Si.  
+  - [x] Valor da melhor solução encontrada pela meta-heurítica: Sh.  
+  - [x] Tempo de execução da meta-heurística (segundos): H T (s).  
   - [x] Valor da solução encontrada pela formulação: Sf.  
   - [x] Caso termine por limite de tempo, o limite superior: Uf.  
   - [x] Tempo de execução da formulação (segundos): F T (s).
-- [ ] Análise dos resultados (resultados variam muito com a semente de aleatoriedade? é melhor que a formulação?).
-- [ ] Conclusões e bibliografia utilizada.  
+- [x] Análise dos resultados (resultados variam muito com a semente de aleatoriedade? é melhor que a formulação?).
+- [x] Conclusões e bibliografia utilizada.  
 ## Apresentação:  
 https://docs.google.com/presentation/d/1mJHNlr6eC86nwn9THPruwF6e-OqqGj3GZmNK6_8WeLA/edit?usp=sharing  
 
